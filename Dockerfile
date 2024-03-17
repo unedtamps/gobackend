@@ -14,6 +14,6 @@ COPY --from=root-certs /etc/passwd /etc/passwd
 COPY --from=root-certs /etc/group /etc/group
 COPY --chown=1000:1000 --from=root-certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --chown=1000:1000 --from=builder /todo /todo
-COPY .env .
+# COPY .env .
 USER app
 CMD ["/todo" ]
