@@ -1,0 +1,24 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    schema: "internal/migration"
+    queries: "internal/query"
+    database:
+      uri: "postgresql://todos:todos_password@localhost:5435/todos_db?sslmode=disable"
+    rules:
+      - "sqlc/db-prepare"
+    gen:
+      go:
+        package: "repository"
+        out: "pkg/repository"
+        sql_package: "pgx/v5"
+        emit_prepared_queries: false
+        emit_json_tags: true
+        emit_enum_valid_method: true
+        emit_result_struct_pointers: true
+        emit_interface: true
+        emit_exact_table_names: false
+        output_querier_file_name: "query_interface.go"
+        overrides:
+          - go_type: "github.com/google/uuid.UUID"
+            db_type: "uuid"

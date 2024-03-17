@@ -1,0 +1,14 @@
+CREATE TYPE "status" AS ENUM (
+  'OK',
+  'DELETED'
+);
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE OR REPLACE FUNCTION on_update()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE 'plpgsql';
