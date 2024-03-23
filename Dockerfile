@@ -1,19 +1,19 @@
-FROM alpine:3.19 as root-certs
-RUN apk add --no-cache ca-certificates
-RUN addgroup -g 1000 app
-RUN adduser app -u 1000 -D -G app /home/app
-
 FROM golang:1.22.1-alpine3.19 as builder
 WORKDIR /apps
-COPY --from=root-certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY . .
+COPY internal/migration /migration
 RUN go build -o /todo main.go
 
-FROM scratch as final
-COPY --from=root-certs /etc/passwd /etc/passwd
-COPY --from=root-certs /etc/group /etc/group
-COPY --chown=1000:1000 --from=root-certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --chown=1000:1000 --from=builder /todo /todo
-# COPY .env .
-USER app
-CMD ["/todo" ]
+FROM alpine:3.19 as final
+WORKDIR /app
+RUN apk add --no-cache curl
+RUN curl -L https://github.com/golang-migrate/migrate/releases/download/v4.17.0/migrate.linux-amd64.tar.gz | tar xvz
+RUN mv ./migrate /bin
+COPY --from=builder /todo /bin
+COPY tools/start.sh .
+COPY internal/migration ./migration
+COPY public ./public
+RUN chmod +x  /app/start.sh
+RUN rm README.md
+USER root
+CMD ["./start.sh" ]

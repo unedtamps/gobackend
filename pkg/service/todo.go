@@ -22,3 +22,7 @@ func (t *todo) Testing(ctx context.Context) (interface{}, error) {
 	}
 	return id, nil
 }
+
+func (t *todo) Create(ctx context.Context) (*uuid.UUID, *customError) {
+	return nil, nil
+}

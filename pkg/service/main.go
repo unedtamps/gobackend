@@ -11,33 +11,34 @@ type serviceI interface {
 	GetByID(ctx context.Context, id uuid.UUID) interface{}
 }
 
-type Service struct {
-	User userServiceI
-	Todo todoServiceI
-}
-
-func NewService(repo repository.Querier) *Service {
-	return &Service{
-		User: &user{repo},
-		Todo: &todo{repo},
-	}
-}
-
-// user
-type userServiceI interface {
-	serviceI
-	Haha(ctx context.Context) error
-}
-
 type user struct {
 	repository.Querier
 }
 
-// todo
-type todoServiceI interface {
-	serviceI
-	Testing(ctx context.Context) (interface{}, error)
-}
 type todo struct {
 	repository.Querier
+}
+
+type Service struct {
+	User user
+	Todo todo
+}
+
+func NewService(repo repository.Querier) *Service {
+	return &Service{
+		User: user{repo},
+		Todo: todo{repo},
+	}
+}
+
+type customError struct {
+	Code  int
+	Error error
+}
+
+func newError(code int, err error) *customError {
+	return &customError{
+		Code:  code,
+		Error: err,
+	}
 }

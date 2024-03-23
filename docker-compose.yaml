@@ -5,7 +5,7 @@ services:
     env_file:
       - .env
     ports:
-      - 5435:5432
+      - 5432:5432
     volumes:
       - ~/apps/postgres:/var/lib/postgresql/todos
   redis:
@@ -23,5 +23,6 @@ services:
     env_file:
       - .env
     ports:
-      - 8080:8080
-    command: ["/todo"]
+      - ${SERVER_PORT}:${SERVER_PORT}
+    volumes:
+      - ./public:/app/public

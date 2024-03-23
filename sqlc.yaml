@@ -4,7 +4,7 @@ sql:
     schema: "internal/migration"
     queries: "internal/query"
     database:
-      uri: "postgresql://todos:todos_password@localhost:5435/todos_db?sslmode=disable"
+      uri: "${DB_URI}"
     rules:
       - "sqlc/db-prepare"
     gen:

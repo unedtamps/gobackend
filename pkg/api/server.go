@@ -23,5 +23,6 @@ func NewServer(db *pgxpool.Pool) *Server {
 
 func (s *Server) Run() error {
 	s.SetUpRouter()
+	fmt.Println("Server is running on port:", os.Getenv("SERVER_PORT"))
 	return http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("SERVER_PORT")), s.router)
 }
