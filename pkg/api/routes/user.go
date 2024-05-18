@@ -17,5 +17,6 @@ func UserRoutes(h *handler.Handler) *chi.Mux {
 		r.Use(m.Validate[dto.UserLogin])
 		r.Post("/login", h.Login)
 	})
+
 	return r
 }

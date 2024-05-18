@@ -19,7 +19,19 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	util.ResponseSuccess(w, id, 201, "berhasil register")
 }
 
+// ShowAccount godoc
+//
+//		@Summary		Login User
+//		@Description	User this api to Login your account
+//		@Tags			accounts
+//		@Accept			json
+//		@Produce		json
+//		@Param			 request  body  dto.UserLogin  true  "login using data request"
+//	 @Success      200  {object}  util.Response
+//	 @Failure      400 404 500  {object}  util.Response
+//		@Router			/user/login/ [post]
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
+
 	request := r.Context().Value("req").(dto.UserLogin)
 	id, err := h.User.LoginUser(context.Background(), request)
 	if err != nil {
