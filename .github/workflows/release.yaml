@@ -1,8 +1,8 @@
 name: ci
 on:
   push:
-    tags:
-      - '*'
+    branches:
+      - production
 jobs:
   docker:
     runs-on: ubuntu-latest
@@ -35,3 +35,17 @@ jobs:
           push: true
           context: .
           tags: ${{ steps.meta.outputs.tags}}
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: multiple command
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd  golang-backend
+            wget https://github.com/unedtamps/gobackend/blob/master/docker-compose.yaml -nv -O docker-compose.yaml
+            docker-compose up -d
