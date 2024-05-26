@@ -45,7 +45,7 @@ func (s *Server) SetUpRouter() {
 	s.router.Use(cors.AllowAll().Handler)
 
 	s.router.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		util.ResponseSuccess(w, nil, 200, "api is working")
+		util.ResponseSuccess(w, nil, 200, "Golang Backend")
 	})
 	m.SetJwt()
 
