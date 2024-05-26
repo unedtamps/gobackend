@@ -36,6 +36,7 @@ jobs:
           context: .
           tags: ${{ steps.meta.outputs.tags}}
   deploy:
+    needs: docker
     runs-on: ubuntu-latest
     steps:
       - name: multiple command
@@ -47,5 +48,6 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             cd  golang-backend
-            wget https://github.com/unedtamps/gobackend/blob/master/docker-compose.yaml -nv -O docker-compose.yaml
+            wget https://raw.githubusercontent.com/unedtamps/gobackend/master/docker-compose.yaml -nv -O docker-compose.yaml
+            docker compose down
             docker compose up -d

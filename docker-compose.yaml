@@ -1,3 +1,6 @@
+networks:
+  golang-net:
+    driver: bridge
 services:
   postgres:
     container_name: postgres_todo
@@ -6,6 +9,8 @@ services:
       - .env
     ports:
       - 5432:5432
+    networks:
+      - golang-net
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
   redis:
@@ -13,13 +18,20 @@ services:
     image: redis:7.2.4-alpine
     env_file:
       - .env
+    networks:
+      - golang-net
     ports:
       - 6379:6379
   backend:
     container_name: backend
     env_file:
       - .env
-    image: ${IMAGE_NAME}
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    images: ${IMAGE_NAME}
+    networks:
+      - golang-net
     ports:
       - ${SERVER_PORT}:${SERVER_PORT}
     volumes:
