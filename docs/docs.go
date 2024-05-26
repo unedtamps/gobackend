@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/user/login/": {
+        "/user/login": {
             "post": {
                 "description": "User this api to Login your account",
                 "consumes": [
@@ -43,13 +43,77 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/util.Response"
+                            "$ref": "#/definitions/util.Success"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "type": "404"
+                            "$ref": "#/definitions/util.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/util.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/util.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/register": {
+            "post": {
+                "description": "User this api to Register your account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Register User",
+                "parameters": [
+                    {
+                        "description": "register using data request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserRegister"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/util.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.Error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/util.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/util.Error"
                         }
                     }
                 }
@@ -74,18 +138,43 @@ const docTemplate = `{
                 }
             }
         },
-        "util.Response": {
+        "dto.UserRegister": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "maxLength": 32,
+                    "minLength": 8
+                }
+            }
+        },
+        "util.Error": {
             "type": "object",
             "properties": {
-                "data": {},
-                "error": {
-                    "type": "string"
+                "code": {
+                    "type": "integer"
                 },
                 "message": {
                     "type": "string"
+                }
+            }
+        },
+        "util.Success": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
                 },
-                "success": {
-                    "type": "boolean"
+                "data": {},
+                "message": {
+                    "type": "string"
                 }
             }
         }

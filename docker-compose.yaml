@@ -7,7 +7,7 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - ~/apps/postgres:/var/lib/postgresql/todos
+      - ./postgres-data:/var/lib/postgresql/data
   redis:
     container_name: redis_todo
     image: redis:7.2.4-alpine
@@ -17,11 +17,9 @@ services:
       - 6379:6379
   backend:
     container_name: backend
-    build:
-      context: .
-      dockerfile: Dockerfile
     env_file:
       - .env
+    image: ${IMAGE_NAME}
     ports:
       - ${SERVER_PORT}:${SERVER_PORT}
     volumes:

@@ -16,6 +16,8 @@ sqlc:
 	@DB_URI="$(DB_DRIVER)://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(PGHOST):$(POSTGRES_PORT)/$(POSTGRES_DB)?sslmode=disable" sqlc generate
 test:
 	@ENV="test" go test -v -cover ./...
+swag:
+	@swag init
 dev:
 	@ENV="dev" GIN_MODE="debug" air
 prod:
