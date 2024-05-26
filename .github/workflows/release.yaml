@@ -48,6 +48,5 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             cd  golang-backend
-            wget https://raw.githubusercontent.com/unedtamps/gobackend/master/docker-compose.yaml -nv -O docker-compose.yaml
             docker compose down
             docker compose up -d
