@@ -29,7 +29,7 @@ services:
     # build:
     #   context: .
     #   dockerfile: Dockerfile
-    images: ${IMAGE_NAME}
+    image: ${IMAGE_NAME}
     networks:
       - golang-net
     ports:
