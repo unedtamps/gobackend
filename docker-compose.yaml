@@ -26,9 +26,6 @@ services:
     container_name: backend
     env_file:
       - .env
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
     image: ${IMAGE_NAME}
     networks:
       - golang-net
