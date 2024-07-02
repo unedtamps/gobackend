@@ -22,5 +22,4 @@ prod:
 install:
 	@go get -u
 
-
 .PHONY: migrate-up migrate-down migrate-force sqlc create-db test dev prod install
