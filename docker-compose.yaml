@@ -12,7 +12,7 @@ services:
     networks:
       - golang-net
     volumes:
-      - ./postgres-data:/var/lib/postgresql/data
+      - ./postgres-data:/var/lib/postgresql/data:z
   redis:
     container_name: redis_todo
     image: redis:7.2.4-alpine
