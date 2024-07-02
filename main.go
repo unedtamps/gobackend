@@ -22,7 +22,7 @@ func main() {
 
 	connStr := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		os.Getenv("PGHOST"),
+		os.Getenv("POSTGRES_HOST"),
 		os.Getenv("POSTGRES_PORT"),
 		os.Getenv("POSTGRES_USER"),
 		os.Getenv("POSTGRES_PASSWORD"),
@@ -31,6 +31,11 @@ func main() {
 	ctx := context.Background()
 	db, err := pgxpool.New(ctx, connStr)
 	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := db.Ping(ctx); err != nil {
+		db.Close()
 		log.Fatal(err)
 	}
 	defer db.Close()

@@ -8,12 +8,12 @@ import (
 )
 
 func (t *todo) GetByID(ctx context.Context, id uuid.UUID) interface{} {
-	data, _ := t.QueryTodoById(ctx, id)
+	data, _ := t.q.QueryTodoById(ctx, id)
 	return data
 }
 
 func (t *todo) Testing(ctx context.Context) (interface{}, error) {
-	id, err := t.MakeTodo(ctx, repository.MakeTodoParams{
+	id, err := t.q.MakeTodo(ctx, repository.MakeTodoParams{
 		Title:       "mantep",
 		Description: "Kerjai sesuatu",
 	})

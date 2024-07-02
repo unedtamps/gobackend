@@ -2,7 +2,7 @@ package util
 
 import "golang.org/x/crypto/bcrypt"
 
-func GenereateHasH(password string) (string, error) {
+func GenereateHash(password string) (string, error) {
 	res, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return "", err

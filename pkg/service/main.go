@@ -12,11 +12,11 @@ type serviceI interface {
 }
 
 type user struct {
-	repository.Querier
+	q repository.Querier
 }
 
 type todo struct {
-	repository.Querier
+	q repository.Querier
 }
 
 type Service struct {
@@ -26,8 +26,8 @@ type Service struct {
 
 func NewService(repo repository.Querier) *Service {
 	return &Service{
-		User: user{repo},
-		Todo: todo{repo},
+		User: user{q: repo},
+		Todo: todo{q: repo},
 	}
 }
 

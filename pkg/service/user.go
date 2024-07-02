@@ -21,11 +21,11 @@ func (u *user) RegisterUser(
 	ctx context.Context,
 	data dto.UserRegister,
 ) (*uuid.UUID, *customError) {
-	hashed, err := util.GenereateHasH(data.Password)
+	hashed, err := util.GenereateHash(data.Password)
 	if err != nil {
 		return nil, newError(500, err)
 	}
-	id, err := u.CreateUser(ctx, repository.CreateUserParams{
+	id, err := u.q.CreateUser(ctx, repository.CreateUserParams{
 		Email:    data.Email,
 		Password: hashed,
 	})
@@ -36,8 +36,7 @@ func (u *user) RegisterUser(
 }
 
 func (u *user) LoginUser(ctx context.Context, data dto.UserLogin) (*uuid.UUID, *customError) {
-
-	res, err := u.GetUserByEmail(ctx, data.Email)
+	res, err := u.q.GetUserByEmail(ctx, data.Email)
 	if err != nil {
 		return nil, newError(404, err)
 	}
