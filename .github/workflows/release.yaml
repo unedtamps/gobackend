@@ -95,7 +95,7 @@ jobs:
           VM_PASSWORD: ${{ secrets.PASSWORD }}
         run: |
           echo "Transferring binary to VM..."
-          sshpass -p "${VM_PASSWORD}" scp -o StrictHostKeyChecking=no myapp ${VM_USERNAME}@${VM_HOST}:/home/${VM_USERNAME}/app
+          sshpass -p "${VM_PASSWORD}" scp -o StrictHostKeyChecking=no app ${VM_USERNAME}@${VM_HOST}:/home/${VM_USERNAME}/app
 # docker:
 #   needs: test
 #   runs-on: ubuntu-latest
