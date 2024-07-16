@@ -97,7 +97,7 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
           script: |
-            scp -o StrictHostKeyChecking=no app ${{secrets.USERNAME}}@{{secrets.HOST}}:/home/${{secrets.USERNAME}}/golang-backend/app
+            scp -o StrictHostKeyChecking=no app ${{secrets.USERNAME}}@${{secrets.HOST}}:/home/${{secrets.USERNAME}}/golang-backend/app/
             cd  ./golang-backend
   # docker:
   #   needs: test
