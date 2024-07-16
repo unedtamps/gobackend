@@ -54,7 +54,7 @@ jobs:
       - name: Run migration
         run: migrate -path internal/migration -database "postgres://postgres:password@localhost:5432/appdb?sslmode=disable" -verbose up
       - name: Run sqlc generate
-        run: DB_URI="postgres://postgres:password@localhost:5432/appdb?sslmode=disable" sqlc generete
+        run: DB_URI="postgres://postgres:password@localhost:5432/appdb?sslmode=disable" sqlc generate
       - name: Run tests
         run: make test
   docker:
