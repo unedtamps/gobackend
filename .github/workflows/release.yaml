@@ -100,5 +100,8 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           script: |
             cd ./golang-backend
+            git stash
+            git checkout master
+            git pull --rebase origin master
             chmod +x ./bin/prod
             make prod ENV=production
