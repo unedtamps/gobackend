@@ -25,7 +25,7 @@ dev:
 	@GIN_MODE="debug" godotenv -f .env.development air
 prod:
 	@go build -o ./bin/app 
-	@GIN_MODE="release" godotenv -f .env.production ./bin/app
+	@GIN_MODE="release" godotenv -f .env.production ./bin/prod
 install:
 	@go get -u
 
