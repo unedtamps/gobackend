@@ -58,6 +58,7 @@ jobs:
       - name: Run tests
         run: go test -V -cover ./...
   build:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: checkout code
@@ -75,7 +76,7 @@ jobs:
           name: app
           path: app
   deploy:
-    needs: test
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Download Artifact
