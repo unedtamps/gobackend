@@ -22,15 +22,3 @@ services:
       - ${REDIS_PORT}:6379
     volumes:
       - ./docker/redis:/data
-  backend:
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
-    image: ${IMAGE_NAME}
-    env_file: "env.production"
-    networks:
-      - golang-net
-    ports:
-      - ${SERVER_PORT}:${SERVER_PORT}
-    volumes:
-      - ./public:/app/public
