@@ -20,7 +20,7 @@ create-migrate:
 sqlc:
 	@DB_URI="$(DB_DRIVER)://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)?sslmode=disable" sqlc generate
 test:
-	@ENV="test" go test -v -cover ./...
+	@go test -v -cover ./...
 dev:
 	@GIN_MODE="debug" godotenv -f .env.development air
 prod:
