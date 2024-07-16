@@ -54,7 +54,7 @@ jobs:
       - name: Export environment
         run: export DBURI="postgres://postgres:password@localhost:5432/appdb?sslmode=disable"
       - name: Run migration
-        run: migrate -path internal/migration -database "$DBURI" -verbose up
+        run: migrate -path internal/migration -database "${DBURI}" -verbose up
       - name: Run sqlc generate
         run: sqlc generete
       - name: Run tests
