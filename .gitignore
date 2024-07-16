@@ -1,3 +1,5 @@
-.env
-postgres-data
+.env.production
+docker
 tmp
+.env.development
+bin

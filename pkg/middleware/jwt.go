@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-chi/jwtauth/v5"
 	"github.com/google/uuid"
-	"github.com/unedtamps/gobackend/util"
+	"github.com/unedtamps/gobackend/utils"
 )
 
 type Login struct {
@@ -48,12 +48,12 @@ func Authenticator(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tokenString := getTokenString(r)
 		if tokenString == "" {
-			util.ResponseError(w, 400, jwtauth.ErrNoTokenFound)
+			utils.ResponseError(w, 400, jwtauth.ErrNoTokenFound)
 			return
 		}
 		_, err := jwtauth.VerifyToken(TokenAuth, tokenString)
 		if err != nil {
-			util.ResponseError(w, 400, err)
+			utils.ResponseError(w, 400, err)
 			return
 		}
 		next.ServeHTTP(w, r)

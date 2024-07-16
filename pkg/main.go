@@ -1,4 +1,4 @@
-package api
+package pkg
 
 import (
 	"errors"
@@ -10,12 +10,12 @@ import (
 	chi_mid "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/unedtamps/gobackend/pkg/api/routes"
 	"github.com/unedtamps/gobackend/pkg/handler"
 	m "github.com/unedtamps/gobackend/pkg/middleware"
 	"github.com/unedtamps/gobackend/pkg/repository"
+	"github.com/unedtamps/gobackend/pkg/router"
 	"github.com/unedtamps/gobackend/pkg/service"
-	"github.com/unedtamps/gobackend/util"
+	"github.com/unedtamps/gobackend/utils"
 )
 
 type Server struct {
@@ -41,7 +41,7 @@ func (s *Server) Setup() {
 	s.router.Use(cors.AllowAll().Handler)
 
 	s.router.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		util.ResponseSuccess(w, nil, 200, "Golang Backend")
+		utils.ResponseSuccess(w, nil, 200, "Golang Backend")
 	})
 	m.SetJwt()
 
@@ -49,14 +49,14 @@ func (s *Server) Setup() {
 	service := service.NewService(repo)
 	handler := handler.NewHandler(service)
 
-	s.router.Mount("/user", routes.UserRoutes(handler))
-	s.router.Mount("/todo", routes.TodoRoutes(handler))
+	s.router.Mount("/user", router.UserRoutes(handler))
+	s.router.Mount("/todo", router.TodoRoutes(handler))
 
 	s.router.NotFound(func(w http.ResponseWriter, r *http.Request) {
-		util.ResponseError(w, http.StatusNotFound, errors.New("Route Not Found"))
+		utils.ResponseError(w, http.StatusNotFound, errors.New("Route Not Found"))
 	})
 	s.router.MethodNotAllowed(func(w http.ResponseWriter, r *http.Request) {
-		util.ResponseError(w, http.StatusMethodNotAllowed, errors.New("Method Not Allowed"))
+		utils.ResponseError(w, http.StatusMethodNotAllowed, errors.New("Method Not Allowed"))
 	})
 
 }

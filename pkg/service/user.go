@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/unedtamps/gobackend/pkg/dto"
 	"github.com/unedtamps/gobackend/pkg/repository"
-	"github.com/unedtamps/gobackend/util"
+	"github.com/unedtamps/gobackend/utils"
 )
 
 func (u *user) GetByID(ctx context.Context, Id uuid.UUID) interface{} {
@@ -21,7 +21,7 @@ func (u *user) RegisterUser(
 	ctx context.Context,
 	data dto.UserRegister,
 ) (*uuid.UUID, *customError) {
-	hashed, err := util.GenereateHash(data.Password)
+	hashed, err := utils.GenereateHash(data.Password)
 	if err != nil {
 		return nil, newError(500, err)
 	}
@@ -41,7 +41,7 @@ func (u *user) LoginUser(ctx context.Context, data dto.UserLogin) (*uuid.UUID, *
 		return nil, newError(404, err)
 	}
 
-	err = util.CompareHash(data.Password, res.Password)
+	err = utils.CompareHash(data.Password, res.Password)
 	if err != nil {
 		return nil, newError(401, err)
 	}

@@ -8,7 +8,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
-	"github.com/unedtamps/gobackend/util"
+	"github.com/unedtamps/gobackend/utils"
 )
 
 var validate *validator.Validate
@@ -25,12 +25,12 @@ func Validate[T any](next http.Handler) http.Handler {
 		var jsonData T
 
 		if err := json.NewDecoder(r.Body).Decode(&jsonData); err != nil {
-			util.ResponseError(w, 400, err)
+			utils.ResponseError(w, 400, err)
 			return
 		}
 
 		if err := validate.Struct(jsonData); err != nil {
-			util.ResponseError(w, 400, err)
+			utils.ResponseError(w, 400, err)
 			return
 		}
 		ctx := r.Context()
