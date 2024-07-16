@@ -5,7 +5,7 @@ on:
       - 'master'
 jobs:
   test:
-    name: golang-test
+    name: Golang Test
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -58,6 +58,7 @@ jobs:
       - name: Run tests
         run: go test -V -cover ./...
   build:
+    name: Build Go
     needs: test
     runs-on: ubuntu-latest
     steps:
@@ -76,6 +77,7 @@ jobs:
           name: app
           path: app
   deploy:
+    name: Deploy
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -86,7 +88,8 @@ jobs:
           path: .
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: multiple command
+      - name: SSH connect
+        id: deploy
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
