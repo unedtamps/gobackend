@@ -21,10 +21,11 @@ sqlc:
 	@DB_URI="$(DB_DRIVER)://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)?sslmode=disable" sqlc generate
 test:
 	@go test -v -cover ./...
+build:
+	@go build -o ./bin/app 
 dev:
 	@GIN_MODE="debug" godotenv -f .env.development air
 prod:
-	@go build -o ./bin/app 
 	@GIN_MODE="release" godotenv -f .env.production ./bin/prod
 install:
 	@go get -u
