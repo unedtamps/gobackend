@@ -51,15 +51,14 @@ jobs:
           curl -L https://github.com/sqlc-dev/sqlc/releases/download/v1.25.0/sqlc_1.25.0_linux_amd64.tar.gz | tar xvz
           sudo mv ./sqlc /usr/bin/sqlc
           which sqlc
-      - name: Export environment
-        run: export DBURI="postgres://postgres:password@localhost:5432/appdb?sslmode=disable"
       - name: Run migration
-        run: migrate -path internal/migration -database "${DBURI}" -verbose up
+        run: migrate -path internal/migration -database "postgres://postgres:password@localhost:5432/appdb?sslmode=disable" -verbose up
       - name: Run sqlc generate
-        run: sqlc generete
+        run: DB_URI="postgres://postgres:password@localhost:5432/appdb?sslmode=disable" sqlc generete
       - name: Run tests
         run: make test
   docker:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
