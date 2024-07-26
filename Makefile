@@ -1,7 +1,6 @@
 ENV ?=development
 
-include .env.$(ENV)
-export $(shell sed 's/=.*//' .env.$(ENV))
+include .env
 
 migrate-up:
 	@migrate -path internal/migration -database "$(DB_DRIVER)://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)?sslmode=disable" -verbose up
@@ -17,6 +16,8 @@ create-migrate:
 	@read -p "Enter migration name: " name; \
 	migrate create -ext sql -dir internal/migration -seq $$name
 
+setup:
+	@godotenv -f .env docker compose up -d && godotenv -f .env ./tools/start.sh
 sqlc:
 	@DB_URI="$(DB_DRIVER)://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)?sslmode=disable" sqlc generate
 test:
@@ -24,9 +25,9 @@ test:
 build:
 	@go build -o ./bin/app 
 dev:
-	@GIN_MODE="debug" godotenv -f .env.development air
-prod:
-	@GIN_MODE="release" godotenv -f .env.production ./bin/prod
+	@GIN_MODE="debug" godotenv -f .env air
+start:
+	@GIN_MODE="release" godotenv -f .env ./bin/app
 install:
 	@go get -u
 

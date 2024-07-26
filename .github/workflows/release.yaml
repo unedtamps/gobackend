@@ -66,12 +66,12 @@ jobs:
           go-version: 1.21.7
       - name: Compile go
         run: |
-          go build -o prod .
+          go build -o app .
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: prod
-          path: prod
+          name: app
+          path: app
   deploy:
     name: Deploy
     needs: build
@@ -82,7 +82,7 @@ jobs:
       - name: Download Artifact
         uses: actions/download-artifact@v4
         with:
-          name: prod
+          name: app
           path: .
       - name: Deploy to VM
         env:
@@ -91,7 +91,7 @@ jobs:
           VM_PASSWORD: ${{ secrets.PASSWORD }}
         run: |
           echo "Transferring binary to VM..."
-          sshpass -p "${VM_PASSWORD}" scp -o StrictHostKeyChecking=no prod ${VM_USERNAME}@${VM_HOST}:/home/${VM_USERNAME}/golang-backend/bin/prod
+          sshpass -p "${VM_PASSWORD}" scp -o StrictHostKeyChecking=no app ${VM_USERNAME}@${VM_HOST}:/home/${VM_USERNAME}/gobackend/bin/app
       - name: Run Program
         uses: appleboy/ssh-action@master
         with:
@@ -99,9 +99,10 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            cd ./golang-backend
+            cd ./gobackend
             git stash
             git checkout master
             git pull --rebase origin master
-            chmod +x ./bin/prod
-            make prod ENV=production
+            chmod +x ./bin/app
+            make setup
+            make start
