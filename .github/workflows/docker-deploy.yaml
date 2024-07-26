@@ -86,7 +86,7 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           script: |
             cd ./gobackend
-            docker compose -f prod-compose.yaml up --pull always
+            docker compose -f prod-compose.yaml up --pull always -d
       - name: Notify Success
         if: success()
         run: echo "🚀 Deployment was successful"
