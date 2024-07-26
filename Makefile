@@ -17,7 +17,7 @@ create-migrate:
 	migrate create -ext sql -dir internal/migration -seq $$name
 
 setup:
-	@godotenv -f .env docker compose up -d && godotenv -f .env ./tools/start.sh
+	@godotenv -f .env docker compose up -d
 sqlc:
 	@DB_URI="$(DB_DRIVER)://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)?sslmode=disable" sqlc generate
 test:
@@ -27,7 +27,7 @@ build:
 dev:
 	@GIN_MODE="debug" godotenv -f .env air
 start:
-	@GIN_MODE="release" godotenv -f .env ./bin/app
+	@GIN_MODE="release" nohup godotenv -f .env ./bin/app &
 install:
 	@go get -u
 

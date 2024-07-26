@@ -5,3 +5,4 @@ tmp
 .env
 bin/*
 !bin/.gitkeep
+nohup.out
