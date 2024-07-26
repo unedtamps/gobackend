@@ -3,6 +3,3 @@ docker
 tmp
 .env.development
 .env
-bin/*
-!bin/.gitkeep
-nohup.out

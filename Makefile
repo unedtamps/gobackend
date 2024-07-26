@@ -1,5 +1,3 @@
-ENV ?=development
-
 include .env
 
 migrate-up:
@@ -25,9 +23,9 @@ test:
 build:
 	@go build -o ./bin/app 
 dev:
-	@GIN_MODE="debug" godotenv -f .env air
+	@GIN_MODE="debug" godotenv -f .env.development air
 start:
-	@GIN_MODE="release" nohup godotenv -f .env ./bin/app &
+	@GIN_MODE="release" godotenv -f .env ./bin/app
 install:
 	@go get -u
 

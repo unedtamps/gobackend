@@ -5,10 +5,7 @@ services:
   postgres:
     container_name: app-db
     image: postgres:15.6-alpine3.19
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    env_file: ".env"
     ports:
       - ${POSTGRES_PORT}:5432
     networks:
@@ -18,9 +15,23 @@ services:
   redis:
     container_name: app-cache
     image: redis:7.2.4-alpine
+    env_file: ".env"
     networks:
       - golang-net
     ports:
       - ${REDIS_PORT}:6379
     volumes:
       - ./docker/redis:/data
+  backend:
+    container_name: app-be
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    image: ${IMAGE_NAME}
+    env_file: ".env"
+    networks:
+      - golang-net
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+    volumes:
+      - ./public:/app/public
