@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/unedtamps/gobackend/pkg/repository"
+	"github.com/unedtamps/gobackend/src/repository"
 )
 
 type serviceI interface {

@@ -2,9 +2,9 @@ package router
 
 import (
 	"github.com/go-chi/chi/v5"
-	"github.com/unedtamps/gobackend/pkg/dto"
-	"github.com/unedtamps/gobackend/pkg/handler"
-	m "github.com/unedtamps/gobackend/pkg/middleware"
+	"github.com/unedtamps/gobackend/src/dto"
+	"github.com/unedtamps/gobackend/src/handler"
+	m "github.com/unedtamps/gobackend/src/middleware"
 )
 
 func UserRoutes(h *handler.Handler) *chi.Mux {

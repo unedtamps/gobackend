@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/unedtamps/gobackend/pkg/dto"
-	"github.com/unedtamps/gobackend/pkg/middleware"
+	"github.com/unedtamps/gobackend/src/dto"
+	"github.com/unedtamps/gobackend/src/middleware"
 	"github.com/unedtamps/gobackend/utils"
 )
 

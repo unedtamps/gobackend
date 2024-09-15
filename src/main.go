@@ -1,20 +1,20 @@
-package pkg
+package src
 
 import (
 	"errors"
 	"fmt"
 	"net/http"
-	"os"
 
 	"github.com/go-chi/chi/v5"
 	chi_mid "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/unedtamps/gobackend/pkg/handler"
-	m "github.com/unedtamps/gobackend/pkg/middleware"
-	"github.com/unedtamps/gobackend/pkg/repository"
-	"github.com/unedtamps/gobackend/pkg/router"
-	"github.com/unedtamps/gobackend/pkg/service"
+	"github.com/unedtamps/gobackend/config"
+	"github.com/unedtamps/gobackend/src/handler"
+	m "github.com/unedtamps/gobackend/src/middleware"
+	"github.com/unedtamps/gobackend/src/repository"
+	"github.com/unedtamps/gobackend/src/router"
+	"github.com/unedtamps/gobackend/src/service"
 	"github.com/unedtamps/gobackend/utils"
 )
 
@@ -32,8 +32,8 @@ func NewServer(db *pgxpool.Pool) *Server {
 
 func (s *Server) Run() error {
 	s.Setup()
-	fmt.Println("Server is running on port:", os.Getenv("SERVER_PORT"))
-	return http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("SERVER_PORT")), s.router)
+	fmt.Println("Server is running on port:", config.Config.SERVER_PORT)
+	return http.ListenAndServe(fmt.Sprintf(":%s", config.Config.SERVER_PORT), s.router)
 }
 
 func (s *Server) Setup() {

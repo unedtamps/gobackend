@@ -6,8 +6,8 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/httprate"
 	"github.com/go-chi/jwtauth/v5"
-	"github.com/unedtamps/gobackend/pkg/handler"
-	m "github.com/unedtamps/gobackend/pkg/middleware"
+	"github.com/unedtamps/gobackend/src/handler"
+	m "github.com/unedtamps/gobackend/src/middleware"
 )
 
 func TodoRoutes(h *handler.Handler) *chi.Mux {

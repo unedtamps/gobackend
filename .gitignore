@@ -1,5 +1,6 @@
-.env.production
 docker
 tmp
-.env.development
+.env.prod
+.env.dev
 .env
+.env.test

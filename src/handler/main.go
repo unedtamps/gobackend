@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"github.com/unedtamps/gobackend/pkg/service"
+	"github.com/unedtamps/gobackend/src/service"
 )
 
 type Handler struct {

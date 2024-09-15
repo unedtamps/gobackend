@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/unedtamps/gobackend/pkg/dto"
-	"github.com/unedtamps/gobackend/pkg/repository"
+	"github.com/unedtamps/gobackend/src/dto"
+	"github.com/unedtamps/gobackend/src/repository"
 	"github.com/unedtamps/gobackend/utils"
 )
 
