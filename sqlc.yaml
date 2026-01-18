@@ -1,16 +1,14 @@
 version: "2"
 sql:
   - engine: "postgresql"
-    schema: "internal/migration"
-    queries: "internal/query"
-    database:
-      uri: "${DB_URI}"
+    schema: "internal/datastore/postgres/primary/migration"
+    queries: "internal/datastore/postgres/primary/query"
     rules:
       - "sqlc/db-prepare"
     gen:
       go:
-        package: "repository"
-        out: "pkg/repository"
+        package: "pg_gen"
+        out: "internal/datastore/postgres/primary/gen"
         sql_package: "pgx/v5"
         emit_prepared_queries: false
         emit_json_tags: true
@@ -18,7 +16,26 @@ sql:
         emit_result_struct_pointers: true
         emit_interface: true
         emit_exact_table_names: false
-        output_querier_file_name: "query_interface.go"
+        output_querier_file_name: "interface.go"
         overrides:
-          - go_type: "github.com/google/uuid.UUID"
+          - go_type:
+              import: "github.com/oklog/ulid/v2"
+              type: "ULID"
             db_type: "uuid"
+  - engine: "mysql"
+    schema: "internal/datastore/mysql/primary/migration"
+    queries: "internal/datastore/mysql/primary/query"
+    rules:
+      - "sqlc/db-prepare"
+    gen:
+      go:
+        package: "mysql_gen"
+        out: "internal/datastore/mysql/primary/gen"
+        sql_package: "database/sql"
+        emit_prepared_queries: false
+        emit_json_tags: true
+        emit_enum_valid_method: true
+        emit_result_struct_pointers: true
+        emit_interface: true
+        emit_exact_table_names: false
+        output_querier_file_name: "interface.go"

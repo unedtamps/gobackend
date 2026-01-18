@@ -4,3 +4,4 @@ tmp
 .env.dev
 .env
 .env.test
+config.yaml

@@ -1,0 +1,43 @@
+server:
+  host: localhost
+  port: 8080
+  environment: dev
+  jwt_secret: jwtSuperSecreat
+
+rate_limit:
+  enable: true
+  rps: 0.2
+  burst: 4
+
+email:
+  sender: user@gmail.com
+  smtp:
+    host: smtp.mailtrap.io
+    port: 2525
+    username: 58e394934943d
+    password: 58e394934943d
+
+databases:
+  postgres:
+    primary:
+      host: locahost
+      port: 5432
+      user: your_user
+      password: postgres
+      db: postgres
+
+  mysql:
+    primary:
+      host: localhost
+      port: 3306
+      user: root
+      password: mysql
+      db: root
+
+cache:
+  redis:
+    primary:
+      host: localhost
+      port: 6379
+      password: password
+      db: 0

@@ -1,0 +1,5 @@
+1. Multiple Connection possible in SQLC (SQlite, Postgres, Mysql)
+2. Grace fully shutdown
+2. May be we can handling nosql also if needed
+3. Now add logger (optional add opentelemetry), in dev preety in prod json
+
