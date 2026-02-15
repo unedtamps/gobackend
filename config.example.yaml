@@ -18,21 +18,20 @@ email:
     password: 58e394934943d
 
 databases:
-  postgres:
-    primary:
-      host: locahost
-      port: 5432
-      user: your_user
-      password: postgres
-      db: postgres
-
-  mysql:
-    primary:
-      host: localhost
-      port: 3306
-      user: root
-      password: mysql
-      db: root
+  primary:
+    name: primary
+    host: locahost
+    port: 5432
+    user: your_user
+    password: postgres
+    db_name: postgres
+  secondary:
+    name: secondary
+    host: localhost
+    port: 3306
+    user: root
+    password: mysql
+    db_name: root
 
 cache:
   redis:

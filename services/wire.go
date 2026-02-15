@@ -1,20 +1,22 @@
 package services
 
 import (
-	"context"
 	"fmt"
 	"log/slog"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/goforj/wire"
 
 	"github.com/unedtamps/gobackend/internal/bootstrap/database"
 	"github.com/unedtamps/gobackend/internal/config"
 	"github.com/unedtamps/gobackend/middleware"
+	"github.com/unedtamps/gobackend/services/user"
 )
 
+var ServerSet = wire.NewSet(NewServer, Setup)
+
 type Server struct {
-	http   *http.Server
 	db     *database.DB
 	config *config.Config
 	engine *gin.Engine
@@ -22,43 +24,45 @@ type Server struct {
 
 type ServerInterface interface {
 	Run(log *slog.Logger) error
-	Setup(log *slog.Logger)
-	MountRoutes() error
-	Shutdown(ctx context.Context) error
 }
 
-func NewServer(db *database.DB, config *config.Config) ServerInterface {
+func MountRoutes(e *gin.Engine, db *database.DB) {
+	v1 := e.Group("/api/v1")
+	{
+		user.UserRoutes(v1, user.NewUserService(db))
+	}
+}
+
+func Setup(log *slog.Logger) *gin.Engine {
+	e := gin.New()
+	e.Use(gin.Recovery(), middleware.RequestID(), middleware.Logger(log))
+	return e
+}
+
+func NewServer(
+	db *database.DB,
+	config *config.Config,
+	e *gin.Engine,
+) ServerInterface {
 	if config.Server.Environment == "prod" {
 		gin.SetMode(gin.ReleaseMode)
 	}
+	
+	// Mount routes here
+	MountRoutes(e, db)
+	
 	return &Server{
-		http:   &http.Server{},
 		db:     db,
 		config: config,
-		engine: gin.New(),
+		engine: e,
 	}
 }
 
 func (s *Server) Run(log *slog.Logger) error {
-	s.Setup(log)
-	s.MountRoutes()
-
-	s.http = &http.Server{
+	server := &http.Server{
 		Addr:    fmt.Sprintf(":%d", s.config.Server.Port),
 		Handler: s.engine,
 	}
-
 	log.Info(fmt.Sprintf("Server is running in port %d", s.config.Server.Port))
-	return s.http.ListenAndServe()
-}
-func (s *Server) Shutdown(ctx context.Context) error {
-	return s.http.Shutdown(ctx)
-}
-
-func (s *Server) MountRoutes() error {
-	return nil
-}
-
-func (s *Server) Setup(log *slog.Logger) {
-	s.engine.Use(gin.Recovery(), middleware.RequestID(), middleware.Logger(log))
+	return server.ListenAndServe()
 }

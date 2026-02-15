@@ -5,3 +5,5 @@ tmp
 .env
 .env.test
 config.yaml
+data
+archive
