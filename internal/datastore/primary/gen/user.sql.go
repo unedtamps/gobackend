@@ -3,7 +3,7 @@
 //   sqlc v1.30.0
 // source: user.sql
 
-package pg_gen
+package primary
 
 import (
 	"context"

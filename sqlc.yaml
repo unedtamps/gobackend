@@ -1,14 +1,14 @@
 version: "2"
 sql:
   - engine: "postgresql"
-    schema: "internal/datastore/postgres/primary/migration"
-    queries: "internal/datastore/postgres/primary/query"
+    schema: "internal/datastore/primary/migration"
+    queries: "internal/datastore/primary/query"
     rules:
       - "sqlc/db-prepare"
     gen:
       go:
-        package: "pg_gen"
-        out: "internal/datastore/postgres/primary/gen"
+        package: "primary"
+        out: "internal/datastore/primary/gen"
         sql_package: "pgx/v5"
         emit_prepared_queries: false
         emit_json_tags: true
@@ -23,14 +23,14 @@ sql:
               type: "ULID"
             db_type: "uuid"
   - engine: "mysql"
-    schema: "internal/datastore/mysql/primary/migration"
-    queries: "internal/datastore/mysql/primary/query"
+    schema: "internal/datastore/secondary/migration"
+    queries: "internal/datastore/secondary/query"
     rules:
       - "sqlc/db-prepare"
     gen:
       go:
-        package: "mysql_gen"
-        out: "internal/datastore/mysql/primary/gen"
+        package: "secondary"
+        out: "internal/datastore/secondary/gen"
         sql_package: "database/sql"
         emit_prepared_queries: false
         emit_json_tags: true

@@ -13,7 +13,10 @@ start:
 dev:
 	@GIN_MODE="debug" air
 
+migrate:
+	@go run ./cmd/migration/main.go $(ARGS)
+
 install:
 	@go get -u cmd/api && go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 
-.PHONY: gen test build start dev install
+.PHONY: gen test build start dev install migrate

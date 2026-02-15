@@ -3,7 +3,7 @@
 //   sqlc v1.30.0
 // source: product.sql
 
-package mysql_gen
+package secondary
 
 import (
 	"context"

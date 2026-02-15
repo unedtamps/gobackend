@@ -2,7 +2,7 @@
 // versions:
 //   sqlc v1.30.0
 
-package pg_gen
+package primary
 
 import (
 	"context"
