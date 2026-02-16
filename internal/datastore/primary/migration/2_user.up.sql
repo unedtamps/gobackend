@@ -1,5 +1,5 @@
 CREATE TABLE "user" (
-  "id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  "id" CHAR(26) PRIMARY KEY,
   "email" TEXT NOT NULL,
   "password" TEXT NOT NULL,
   "status" "status" NOT NULL DEFAULT 'OK',

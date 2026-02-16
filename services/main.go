@@ -26,10 +26,11 @@ type ServerInterface interface {
 	Run(log *slog.Logger) error
 }
 
-func MountRoutes(e *gin.Engine, db *database.DB) {
+func MountRoutes(e *gin.Engine, db *database.DB, config *config.Config) {
+	userServices := user.InitUserServices(db, config)
 	v1 := e.Group("/api/v1")
 	{
-		user.UserRoutes(v1, user.NewUserService(db))
+		user.RegisterRoutes(v1, userServices)
 	}
 }
 
@@ -47,10 +48,10 @@ func NewServer(
 	if config.Server.Environment == "prod" {
 		gin.SetMode(gin.ReleaseMode)
 	}
-	
+
 	// Mount routes here
-	MountRoutes(e, db)
-	
+	MountRoutes(e, db, config)
+
 	return &Server{
 		db:     db,
 		config: config,

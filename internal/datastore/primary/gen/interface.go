@@ -7,12 +7,35 @@ package primary
 import (
 	"context"
 
-	ulid "github.com/oklog/ulid/v2"
+	"github.com/unedtamps/gobackend/pkg/utils"
 )
 
 type Querier interface {
+	CountTodos(ctx context.Context) (int64, error)
+	CountTodosByUser(ctx context.Context, userID utils.ULID) (int64, error)
+	CountUsers(ctx context.Context) (int64, error)
+	CountUsersByStatus(ctx context.Context, status Status) (int64, error)
+	CreateTodo(ctx context.Context, arg CreateTodoParams) (*Todo, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (*User, error)
-	GetUser(ctx context.Context, id ulid.ULID) (*User, error)
+	DeleteTodo(ctx context.Context, id utils.ULID) error
+	DeleteTodosByUser(ctx context.Context, userID utils.ULID) error
+	DeleteUser(ctx context.Context, id utils.ULID) error
+	GetTodo(ctx context.Context, id utils.ULID) (*Todo, error)
+	GetTodoByUser(ctx context.Context, arg GetTodoByUserParams) ([]*Todo, error)
+	GetUser(ctx context.Context, id utils.ULID) (*User, error)
+	GetUserByEmail(ctx context.Context, email string) (*User, error)
+	ListTodos(ctx context.Context, arg ListTodosParams) ([]*Todo, error)
+	ListTodosByUser(ctx context.Context, userID utils.ULID) ([]*Todo, error)
+	ListUsers(ctx context.Context, arg ListUsersParams) ([]*User, error)
+	SearchTodosByTitle(ctx context.Context, arg SearchTodosByTitleParams) ([]*Todo, error)
+	SearchTodosByUserAndTitle(ctx context.Context, arg SearchTodosByUserAndTitleParams) ([]*Todo, error)
+	SearchUsersByEmail(ctx context.Context, arg SearchUsersByEmailParams) ([]*User, error)
+	SoftDeleteUser(ctx context.Context, id utils.ULID) (*User, error)
+	UpdateTodo(ctx context.Context, arg UpdateTodoParams) (*Todo, error)
+	UpdateTodoDescription(ctx context.Context, arg UpdateTodoDescriptionParams) (*Todo, error)
+	UpdateTodoTitle(ctx context.Context, arg UpdateTodoTitleParams) (*Todo, error)
+	UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, error)
+	UpdateUserStatus(ctx context.Context, arg UpdateUserStatusParams) (*User, error)
 }
 
 var _ Querier = (*Queries)(nil)

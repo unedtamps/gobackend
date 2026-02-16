@@ -9,7 +9,7 @@ import (
 	"fmt"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	ulid "github.com/oklog/ulid/v2"
+	"github.com/unedtamps/gobackend/pkg/utils"
 )
 
 type Status string
@@ -63,8 +63,17 @@ func (e Status) Valid() bool {
 	return false
 }
 
+type Todo struct {
+	ID          utils.ULID         `json:"id"`
+	UserID      utils.ULID         `json:"user_id"`
+	Title       string             `json:"title"`
+	Description pgtype.Text        `json:"description"`
+	CreatedAt   pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
+}
+
 type User struct {
-	ID        ulid.ULID          `json:"id"`
+	ID        utils.ULID         `json:"id"`
 	Email     string             `json:"email"`
 	Password  string             `json:"password"`
 	Status    Status             `json:"status"`

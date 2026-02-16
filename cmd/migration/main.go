@@ -1,14 +1,16 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
+	"sort"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/mysql"
@@ -30,6 +32,7 @@ func main() {
 	name := flag.String("name", "", "migration name for create action")
 	list := flag.Bool("list", false, "list available databases")
 	help := flag.Bool("help", false, "show help message")
+	force := flag.Bool("force", false, "force action without confirmation (for down)")
 
 	flag.Parse()
 
@@ -115,8 +118,10 @@ func main() {
 		if err := os.MkdirAll(migrationDir, os.ModePerm); err != nil {
 			log.Fatalf("could not create migration directory: %v", err)
 		}
-		now := time.Now().UnixNano()
-		versionStr := strconv.FormatInt(now, 10)
+
+		// Get next version number (auto-increment starting from 1)
+		nextVersion := getNextMigrationVersion(migrationDir)
+		versionStr := strconv.Itoa(nextVersion)
 		migrationName := strings.ReplaceAll(strings.ToLower(*name), " ", "_")
 
 		upFile := fmt.Sprintf("%s_%s.up.sql", versionStr, migrationName)
@@ -151,10 +156,31 @@ func main() {
 		}
 		log.Println("Migrations applied successfully")
 	case "down":
-		if *steps > 0 {
-			err = m.Steps(-*steps)
-		} else {
+		// Handle down with confirmation
+		if *steps == 0 {
+			// Down all migrations
+			if !*force {
+				fmt.Println("WARNING: You are about to roll back ALL migrations.")
+				fmt.Println("This will delete all data in the database!")
+				fmt.Println("Tip: Use -steps=N to roll back specific number of migrations.")
+				fmt.Print("Are you sure you want to continue? [y/N]: ")
+				if !confirmAction() {
+					log.Println("Operation cancelled.")
+					return
+				}
+			}
 			err = m.Down()
+		} else {
+			// Down specific number of steps
+			if !*force {
+				fmt.Printf("You are about to roll back %d migration(s).\n", *steps)
+				fmt.Print("Are you sure you want to continue? [y/N]: ")
+				if !confirmAction() {
+					log.Println("Operation cancelled.")
+					return
+				}
+			}
+			err = m.Steps(-*steps)
 		}
 		if err != nil && err != migrate.ErrNoChange {
 			log.Fatalf("Error rolling back migrations: %v", err)
@@ -178,6 +204,104 @@ func main() {
 	}
 }
 
+// getNextMigrationVersion scans the migration directory and returns the next version number
+func getNextMigrationVersion(migrationDir string) int {
+	entries, err := os.ReadDir(migrationDir)
+	if err != nil {
+		// Directory doesn't exist or is empty, start from 1
+		return 1
+	}
+
+	versionRegex := regexp.MustCompile(`^(\d+)_.*\.(up|down)\.sql$`)
+	maxVersion := 0
+
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
+		matches := versionRegex.FindStringSubmatch(entry.Name())
+		if len(matches) > 1 {
+			version, err := strconv.Atoi(matches[1])
+			if err == nil && version > maxVersion {
+				maxVersion = version
+			}
+		}
+	}
+
+	return maxVersion + 1
+}
+
+// confirmAction reads user input and returns true if confirmed
+func confirmAction() bool {
+	reader := bufio.NewReader(os.Stdin)
+	response, err := reader.ReadString('\n')
+	if err != nil {
+		return false
+	}
+	response = strings.TrimSpace(strings.ToLower(response))
+	return response == "y" || response == "yes"
+}
+
+// parseMigrationFiles parses migration files and returns sorted list
+func parseMigrationFiles(migrationDir string) ([]migrationFile, error) {
+	entries, err := os.ReadDir(migrationDir)
+	if err != nil {
+		return nil, err
+	}
+
+	versionRegex := regexp.MustCompile(`^(\d+)_(.+)\.(up|down)\.sql$`)
+	migrations := make(map[int]*migrationFile)
+
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
+		matches := versionRegex.FindStringSubmatch(entry.Name())
+		if len(matches) != 4 {
+			continue
+		}
+
+		version, err := strconv.Atoi(matches[1])
+		if err != nil {
+			continue
+		}
+
+		name := matches[2]
+		direction := matches[3]
+
+		if migrations[version] == nil {
+			migrations[version] = &migrationFile{
+				Version: version,
+				Name:    name,
+			}
+		}
+
+		if direction == "up" {
+			migrations[version].HasUp = true
+		} else {
+			migrations[version].HasDown = true
+		}
+	}
+
+	result := make([]migrationFile, 0, len(migrations))
+	for _, m := range migrations {
+		result = append(result, *m)
+	}
+
+	sort.Slice(result, func(i, j int) bool {
+		return result[i].Version < result[j].Version
+	})
+
+	return result, nil
+}
+
+type migrationFile struct {
+	Version int
+	Name    string
+	HasUp   bool
+	HasDown bool
+}
+
 func printHelp() {
 	fmt.Println("Usage: go run cmd/migration/main.go [flags]")
 	fmt.Println("\nFlags:")
@@ -194,6 +318,10 @@ func printHelp() {
 	fmt.Println("  go run cmd/migration/main.go -db=secondary -action=up -steps=1")
 	fmt.Println("  go run cmd/migration/main.go -db=backup -action=version")
 	fmt.Println("")
-	fmt.Println("  # Create new migration")
+	fmt.Println("  # Create new migration (auto-increment version)")
 	fmt.Println("  go run cmd/migration/main.go -db=primary -action=create -name=my_new_migration")
+	fmt.Println("")
+	fmt.Println("  # Down migrations with confirmation")
+	fmt.Println("  go run cmd/migration/main.go -db=primary -action=down -steps=1")
+	fmt.Println("  go run cmd/migration/main.go -db=primary -action=down -force  # Skip confirmation")
 }

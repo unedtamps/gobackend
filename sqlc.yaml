@@ -18,10 +18,18 @@ sql:
         emit_exact_table_names: false
         output_querier_file_name: "interface.go"
         overrides:
-          - go_type:
-              import: "github.com/oklog/ulid/v2"
+          - column: "user.id"
+            go_type:
+              import: "github.com/unedtamps/gobackend/pkg/utils"
               type: "ULID"
-            db_type: "uuid"
+          - column: "todo.id"
+            go_type:
+              import: "github.com/unedtamps/gobackend/pkg/utils"
+              type: "ULID"
+          - column: "todo.user_id"
+            go_type:
+              import: "github.com/unedtamps/gobackend/pkg/utils"
+              type: "ULID"
   - engine: "mysql"
     schema: "internal/datastore/secondary/migration"
     queries: "internal/datastore/secondary/query"

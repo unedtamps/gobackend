@@ -1,61 +1,34 @@
 package middleware
 
-// import (
-// 	"fmt"
-// 	"net/http"
-// 	"os"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/unedtamps/gobackend/pkg/utils"
+)
 
-// 	"github.com/go-chi/jwtauth/v5"
-// 	"github.com/google/uuid"
-// 	"github.com/unedtamps/gobackend/utils"
-// )
+func JWT(j *utils.JWTGenerator) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// get token string from request
+		token := c.Request.Header.Get("Authorization")
+		if token == "" {
+			c.JSON(401, gin.H{
+				"error": "unauthorized",
+			})
+			c.Abort()
+			return
+		}
 
-// type Login struct {
-// 	Id    uuid.UUID `json:"id"`
-// 	Email string    `json:"email"`
-// }
-
-// var TokenAuth *jwtauth.JWTAuth
-
-// func NewJwt() *jwtauth.JWTAuth {
-// 	key := fmt.Sprintf("%s", os.Getenv("JWT_SECRET"))
-// 	if key == "" {
-// 		panic("JWT_SECRET is not set")
-// 	}
-// 	return jwtauth.New(
-// 		"HS256",
-// 		[]byte(key),
-// 		nil,
-// 	)
-// }
-
-// func SetJwt() {
-// 	TokenAuth = NewJwt()
-// }
-
-// func getTokenString(r *http.Request) string {
-// 	tokenString := jwtauth.TokenFromHeader(r)
-// 	if tokenString == "" {
-// 		tokenString = jwtauth.TokenFromQuery(r)
-// 	}
-// 	if tokenString == "" {
-// 		tokenString = jwtauth.TokenFromCookie(r)
-// 	}
-// 	return tokenString
-// }
-
-// func Authenticator(next http.Handler) http.Handler {
-// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-// 		tokenString := getTokenString(r)
-// 		if tokenString == "" {
-// 			utils.ResponseError(w, 400, jwtauth.ErrNoTokenFound)
-// 			return
-// 		}
-// 		_, err := jwtauth.VerifyToken(TokenAuth, tokenString)
-// 		if err != nil {
-// 			utils.ResponseError(w, 400, err)
-// 			return
-// 		}
-// 		next.ServeHTTP(w, r)
-// 	})
-// }
+		// handle Bearer
+		token = token[7:]
+		// parse token
+		claims, err := j.ParseClaims(token)
+		if err != nil {
+			c.JSON(401, gin.H{
+				"error": "unauthorized",
+			})
+			c.Abort()
+			return
+		}
+		c.Set("userID", claims.UserID)
+		c.Next()
+	}
+}

@@ -1,0 +1,15 @@
+CREATE TABLE "todo" (
+  id CHAR(26) NOT NULL,
+  user_id CHAR(26) NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  description VARCHAR(255),
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (id),
+  FOREIGN KEY (user_id) REFERENCES "user" (id)
+);
+
+CREATE TRIGGER todo_on_update
+BEFORE UPDATE ON "todo"
+FOR EACH ROW
+EXECUTE PROCEDURE on_update();

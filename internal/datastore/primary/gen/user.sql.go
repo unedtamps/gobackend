@@ -8,19 +8,45 @@ package primary
 import (
 	"context"
 
-	ulid "github.com/oklog/ulid/v2"
+	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/unedtamps/gobackend/pkg/utils"
 )
 
+const countUsers = `-- name: CountUsers :one
+SELECT COUNT(*)
+FROM "user"
+`
+
+func (q *Queries) CountUsers(ctx context.Context) (int64, error) {
+	row := q.db.QueryRow(ctx, countUsers)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
+const countUsersByStatus = `-- name: CountUsersByStatus :one
+SELECT COUNT(*)
+FROM "user"
+WHERE status = $1
+`
+
+func (q *Queries) CountUsersByStatus(ctx context.Context, status Status) (int64, error) {
+	row := q.db.QueryRow(ctx, countUsersByStatus, status)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createUser = `-- name: CreateUser :one
-insert into "user" (id,email, password)
-values ($1, $2, $3)
-returning id, email, password, status, created_at, updated_at
+INSERT INTO "user" (id, email, password)
+VALUES ($1, $2, $3)
+RETURNING id, email, password, status, created_at, updated_at
 `
 
 type CreateUserParams struct {
-	ID       ulid.ULID `json:"id"`
-	Email    string    `json:"email"`
-	Password string    `json:"password"`
+	ID       utils.ULID `json:"id"`
+	Email    string     `json:"email"`
+	Password string     `json:"password"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (*User, error) {
@@ -37,14 +63,201 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (*User, 
 	return &i, err
 }
 
-const getUser = `-- name: GetUser :one
-select id, email, password, status, created_at, updated_at
-from "user"
-where id = $1
+const deleteUser = `-- name: DeleteUser :exec
+DELETE FROM "user"
+WHERE id = $1
 `
 
-func (q *Queries) GetUser(ctx context.Context, id ulid.ULID) (*User, error) {
+func (q *Queries) DeleteUser(ctx context.Context, id utils.ULID) error {
+	_, err := q.db.Exec(ctx, deleteUser, id)
+	return err
+}
+
+const getUser = `-- name: GetUser :one
+SELECT id, email, password, status, created_at, updated_at
+FROM "user"
+WHERE id = $1
+LIMIT 1
+`
+
+func (q *Queries) GetUser(ctx context.Context, id utils.ULID) (*User, error) {
 	row := q.db.QueryRow(ctx, getUser, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Password,
+		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return &i, err
+}
+
+const getUserByEmail = `-- name: GetUserByEmail :one
+SELECT id, email, password, status, created_at, updated_at
+FROM "user"
+WHERE email = $1
+LIMIT 1
+`
+
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (*User, error) {
+	row := q.db.QueryRow(ctx, getUserByEmail, email)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Password,
+		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return &i, err
+}
+
+const listUsers = `-- name: ListUsers :many
+SELECT id, email, password, status, created_at, updated_at
+FROM "user"
+ORDER BY created_at DESC
+LIMIT $1 OFFSET $2
+`
+
+type ListUsersParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]*User, error) {
+	rows, err := q.db.Query(ctx, listUsers, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []*User
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(
+			&i.ID,
+			&i.Email,
+			&i.Password,
+			&i.Status,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const searchUsersByEmail = `-- name: SearchUsersByEmail :many
+SELECT id, email, password, status, created_at, updated_at
+FROM "user"
+WHERE email ILIKE '%' || $1 || '%'
+ORDER BY created_at DESC
+LIMIT $2 OFFSET $3
+`
+
+type SearchUsersByEmailParams struct {
+	Column1 pgtype.Text `json:"column_1"`
+	Limit   int32       `json:"limit"`
+	Offset  int32       `json:"offset"`
+}
+
+func (q *Queries) SearchUsersByEmail(ctx context.Context, arg SearchUsersByEmailParams) ([]*User, error) {
+	rows, err := q.db.Query(ctx, searchUsersByEmail, arg.Column1, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []*User
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(
+			&i.ID,
+			&i.Email,
+			&i.Password,
+			&i.Status,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const softDeleteUser = `-- name: SoftDeleteUser :one
+UPDATE "user"
+SET status = 'DELETED'
+WHERE id = $1
+RETURNING id, email, password, status, created_at, updated_at
+`
+
+func (q *Queries) SoftDeleteUser(ctx context.Context, id utils.ULID) (*User, error) {
+	row := q.db.QueryRow(ctx, softDeleteUser, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Password,
+		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return &i, err
+}
+
+const updateUser = `-- name: UpdateUser :one
+UPDATE "user"
+SET email = $2,
+    password = $3
+WHERE id = $1
+RETURNING id, email, password, status, created_at, updated_at
+`
+
+type UpdateUserParams struct {
+	ID       utils.ULID `json:"id"`
+	Email    string     `json:"email"`
+	Password string     `json:"password"`
+}
+
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, error) {
+	row := q.db.QueryRow(ctx, updateUser, arg.ID, arg.Email, arg.Password)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Password,
+		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return &i, err
+}
+
+const updateUserStatus = `-- name: UpdateUserStatus :one
+UPDATE "user"
+SET status = $2
+WHERE id = $1
+RETURNING id, email, password, status, created_at, updated_at
+`
+
+type UpdateUserStatusParams struct {
+	ID     utils.ULID `json:"id"`
+	Status Status     `json:"status"`
+}
+
+func (q *Queries) UpdateUserStatus(ctx context.Context, arg UpdateUserStatusParams) (*User, error) {
+	row := q.db.QueryRow(ctx, updateUserStatus, arg.ID, arg.Status)
 	var i User
 	err := row.Scan(
 		&i.ID,
