@@ -2,11 +2,8 @@ module github.com/unedtamps/gobackend
 
 go 1.25
 
-require github.com/go-chi/chi/v5 v5.2.4 // indirect
-
 require (
 	github.com/gin-gonic/gin v1.11.0
-	github.com/go-chi/jwtauth/v5 v5.3.3
 	github.com/go-playground/validator/v10 v10.30.1
 	github.com/go-sql-driver/mysql v1.9.3
 	github.com/goforj/wire v1.1.0
@@ -24,7 +21,6 @@ require (
 	github.com/bytedance/sonic v1.14.0 // indirect
 	github.com/bytedance/sonic/loader v0.3.0 // indirect
 	github.com/cloudwego/base64x v0.1.6 // indirect
-	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.0 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.12 // indirect
 	github.com/gin-contrib/sse v1.1.0 // indirect
@@ -39,12 +35,6 @@ require (
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
-	github.com/lestrrat-go/blackmagic v1.0.4 // indirect
-	github.com/lestrrat-go/httpcc v1.0.1 // indirect
-	github.com/lestrrat-go/httprc v1.0.6 // indirect
-	github.com/lestrrat-go/iter v1.0.2 // indirect
-	github.com/lestrrat-go/jwx/v2 v2.1.6 // indirect
-	github.com/lestrrat-go/option v1.0.1 // indirect
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 // indirect
@@ -53,7 +43,6 @@ require (
 	github.com/quic-go/qpack v0.5.1 // indirect
 	github.com/quic-go/quic-go v0.54.0 // indirect
 	github.com/sagikazarmark/locafero v0.12.0 // indirect
-	github.com/segmentio/asm v1.2.1 // indirect
 	github.com/spf13/afero v1.15.0 // indirect
 	github.com/spf13/cast v1.10.0 // indirect
 	github.com/spf13/pflag v1.0.10 // indirect
