@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/oklog/ulid/v2"
+	"github.com/unedtamps/gobackend/pkg/utils"
 )
 
 type RegisterRequest struct {
@@ -21,7 +21,7 @@ type UpdateProfileRequest struct {
 }
 
 type UserResponse struct {
-	ID        ulid.ULID          `json:"id"`
+	ID        utils.ULID         `json:"id"`
 	Email     string             `json:"email"`
 	Status    string             `json:"status"`
 	CreatedAt pgtype.Timestamptz `json:"created_at"`

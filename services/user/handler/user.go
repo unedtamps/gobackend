@@ -5,12 +5,12 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/oklog/ulid/v2"
+	"github.com/unedtamps/gobackend/middleware"
 	"github.com/unedtamps/gobackend/services/user/service"
 )
 
 func (h *Handler) GetProfile(c *gin.Context) {
-	userID, exists := c.Get("userID")
+	userID, exists := middleware.GetUserID(c)
 	if !exists {
 		c.JSON(http.StatusUnauthorized, ErrorResponse{
 			Error:   "unauthorized",
@@ -18,7 +18,7 @@ func (h *Handler) GetProfile(c *gin.Context) {
 		})
 		return
 	}
-	result, err := h.svc.GetByID(c.Request.Context(), ulid.MustParse(userID.(string)))
+	result, err := h.svc.GetByID(c.Request.Context(), userID)
 	if err != nil {
 		if errors.Is(err, service.ErrUserNotFound) {
 			c.JSON(http.StatusNotFound, ErrorResponse{
@@ -42,13 +42,8 @@ func (h *Handler) GetProfile(c *gin.Context) {
 	})
 }
 
-type UpdateProfileRequest struct {
-	Email    string `json:"email,omitempty"    binding:"omitempty,email"`
-	Password string `json:"password,omitempty" binding:"omitempty,min=6"`
-}
-
 func (h *Handler) UpdateProfile(c *gin.Context) {
-	userID, exists := c.Get("userID")
+	userID, exists := middleware.GetUserID(c)
 	if !exists {
 		c.JSON(http.StatusUnauthorized, ErrorResponse{
 			Error:   "unauthorized",
@@ -68,7 +63,7 @@ func (h *Handler) UpdateProfile(c *gin.Context) {
 
 	result, err := h.svc.Update(
 		c.Request.Context(),
-		ulid.MustParse(userID.(string)),
+		userID,
 		req.Email,
 		req.Password,
 	)
@@ -89,7 +84,7 @@ func (h *Handler) UpdateProfile(c *gin.Context) {
 }
 
 func (h *Handler) DeleteAccount(c *gin.Context) {
-	userID, exists := c.Get("userID")
+	userID, exists := middleware.GetUserID(c)
 	if !exists {
 		c.JSON(http.StatusUnauthorized, ErrorResponse{
 			Error:   "unauthorized",
@@ -98,7 +93,7 @@ func (h *Handler) DeleteAccount(c *gin.Context) {
 		return
 	}
 
-	if err := h.svc.SoftDelete(c.Request.Context(), ulid.MustParse(userID.(string))); err != nil {
+	if err := h.svc.SoftDelete(c.Request.Context(), userID); err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{
 			Error:   "internal_error",
 			Message: err.Error(),

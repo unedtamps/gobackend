@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/unedtamps/gobackend/internal/config"
@@ -62,11 +63,18 @@ func NewDBInstance(ctx context.Context, cfg *config.Config) (*DB, error) {
 	return database, nil
 }
 
-func (db *DB) Close() {
+func (db *DB) Close() error {
 	if db == nil {
-		return
+		return fmt.Errorf("db is nil")
 	}
 	db.PRIMARY.Close()
-	db.SECONDARY.Close()
-	db.BACKUP.Close()
+	err := db.SECONDARY.Close()
+	if err != nil {
+		return err
+	}
+	err = db.BACKUP.Close()
+	if err != nil {
+		return err
+	}
+	return nil
 }

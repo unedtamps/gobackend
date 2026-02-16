@@ -1,7 +1,7 @@
 //go:build wireinject
 // +build wireinject
 
-package user
+package todo
 
 import (
 	"github.com/gin-gonic/gin"
@@ -12,8 +12,8 @@ import (
 	primary "github.com/unedtamps/gobackend/internal/datastore/primary/gen"
 	"github.com/unedtamps/gobackend/middleware"
 	"github.com/unedtamps/gobackend/pkg/utils"
-	"github.com/unedtamps/gobackend/services/user/handler"
-	"github.com/unedtamps/gobackend/services/user/service"
+	"github.com/unedtamps/gobackend/services/todo/handler"
+	"github.com/unedtamps/gobackend/services/todo/service"
 )
 
 type Features struct {
@@ -41,23 +41,20 @@ var ProviderSet = wire.NewSet(
 	wire.Struct(new(Features), "*"),
 )
 
-func InitUserFeatures(db *database.DB, cfg *config.Config) *Features {
+func InitTodoFeatures(db *database.DB, cfg *config.Config) *Features {
 	wire.Build(ProviderSet)
 	return nil
 }
 
 func RegisterRoutes(r *gin.RouterGroup, s *Features) {
-	auth := r.Group("/auth")
+	todos := r.Group("/todos")
 	{
-		auth.POST("/register", s.Handler.Register)
-		auth.POST("/login", s.Handler.Login)
-	}
-
-	user := r.Group("/user")
-	{
-		user.Use(middleware.JWT(s.JWTGen))
-		user.GET("/profile", s.Handler.GetProfile)
-		user.PUT("/profile", s.Handler.UpdateProfile)
-		user.DELETE("/account", s.Handler.DeleteAccount)
+		todos.Use(middleware.JWT(s.JWTGen))
+		todos.POST("", s.Handler.Create)
+		todos.GET("", s.Handler.List)
+		todos.GET("/search", s.Handler.Search)
+		todos.GET("/:id", s.Handler.GetByID)
+		todos.PUT("/:id", s.Handler.Update)
+		todos.DELETE("/:id", s.Handler.Delete)
 	}
 }

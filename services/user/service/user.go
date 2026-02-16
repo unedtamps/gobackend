@@ -3,13 +3,12 @@ package service
 import (
 	"context"
 
-	"github.com/oklog/ulid/v2"
 	primary "github.com/unedtamps/gobackend/internal/datastore/primary/gen"
 	"github.com/unedtamps/gobackend/pkg/utils"
 )
 
-func (s *Service) GetByID(ctx context.Context, id ulid.ULID) (UserResult, error) {
-	user, err := s.queries.GetUser(ctx, utils.ULID{ULID: id})
+func (s *Service) GetByID(ctx context.Context, id utils.ULID) (UserResult, error) {
+	user, err := s.queries.GetUser(ctx, id)
 	if err != nil {
 		return UserResult{}, ErrUserNotFound
 	}
@@ -18,7 +17,7 @@ func (s *Service) GetByID(ctx context.Context, id ulid.ULID) (UserResult, error)
 
 func (s *Service) Update(
 	ctx context.Context,
-	id ulid.ULID,
+	id utils.ULID,
 	email, password string,
 ) (UserResult, error) {
 	var hashedPassword string
@@ -31,7 +30,7 @@ func (s *Service) Update(
 	}
 
 	user, err := s.queries.UpdateUser(ctx, primary.UpdateUserParams{
-		ID:       utils.ULID{ULID: id},
+		ID:       id,
 		Email:    email,
 		Password: hashedPassword,
 	})
@@ -42,7 +41,7 @@ func (s *Service) Update(
 	return mapUserToResult(user), nil
 }
 
-func (s *Service) SoftDelete(ctx context.Context, id ulid.ULID) error {
-	_, err := s.queries.SoftDeleteUser(ctx, utils.ULID{ULID: id})
+func (s *Service) SoftDelete(ctx context.Context, id utils.ULID) error {
+	_, err := s.queries.SoftDeleteUser(ctx, id)
 	return err
 }

@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/oklog/ulid/v2"
 	primary "github.com/unedtamps/gobackend/internal/datastore/primary/gen"
 	"github.com/unedtamps/gobackend/pkg/utils"
 )
@@ -31,15 +30,15 @@ func New(queries primary.Querier, jwtGen *utils.JWTGenerator) *Service {
 type Interface interface {
 	Register(ctx context.Context, email, password string) (UserResult, error)
 	Login(ctx context.Context, email, password string) (AuthResult, error)
-	GetByID(ctx context.Context, id ulid.ULID) (UserResult, error)
-	Update(ctx context.Context, id ulid.ULID, email, password string) (UserResult, error)
-	SoftDelete(ctx context.Context, id ulid.ULID) error
+	GetByID(ctx context.Context, id utils.ULID) (UserResult, error)
+	Update(ctx context.Context, id utils.ULID, email, password string) (UserResult, error)
+	SoftDelete(ctx context.Context, id utils.ULID) error
 }
 
 var _ Interface = (*Service)(nil)
 
 type UserResult struct {
-	ID        ulid.ULID
+	ID        utils.ULID
 	Email     string
 	Status    string
 	CreatedAt pgtype.Timestamptz
@@ -52,7 +51,7 @@ type AuthResult struct {
 
 func mapUserToResult(user *primary.User) UserResult {
 	return UserResult{
-		ID:        user.ID.ULID,
+		ID:        user.ID,
 		Email:     user.Email,
 		Status:    string(user.Status),
 		CreatedAt: user.CreatedAt,

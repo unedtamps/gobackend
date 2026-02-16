@@ -41,7 +41,10 @@ func main() {
 	}()
 	<-ctx.Done()
 	app.Log.Info("Server is shutting down")
-	app.DB.Close()
+	err = app.DB.Close()
+	if err != nil {
+		app.Log.Error("Error closing database connections", "err", err)
+	}
 	app.Log.Info("Database connections closed")
 	app.Log.Info("Server is gracefully shutdown")
 }

@@ -11,6 +11,7 @@ import (
 	"github.com/unedtamps/gobackend/internal/bootstrap/database"
 	"github.com/unedtamps/gobackend/internal/config"
 	"github.com/unedtamps/gobackend/middleware"
+	"github.com/unedtamps/gobackend/services/todo"
 	"github.com/unedtamps/gobackend/services/user"
 )
 
@@ -27,10 +28,13 @@ type ServerInterface interface {
 }
 
 func MountRoutes(e *gin.Engine, db *database.DB, config *config.Config) {
-	userServices := user.InitUserServices(db, config)
+	userFeatures := user.InitUserFeatures(db, config)
+	todoFeatures := todo.InitTodoFeatures(db, config)
+
 	v1 := e.Group("/api/v1")
 	{
-		user.RegisterRoutes(v1, userServices)
+		user.RegisterRoutes(v1, userFeatures)
+		todo.RegisterRoutes(v1, todoFeatures)
 	}
 }
 
